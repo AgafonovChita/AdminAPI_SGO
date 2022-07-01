@@ -187,34 +187,41 @@ class API:
 
     async def get_stuff(self):
         """Получить список всех сотрудников"""
-        response = await self.client.post(
-            url="/angular/school/users/staff/",
-            data={
-                'LoginType': 0,
-                'at': self.at,
-                'ver': self.ver,
-            }
-        )
-
-        response = await self.client.get(
-            url="/webapi/appflags/persondata",
-        )
-
-
-        response = await self.client.post(
-            url="/webapi/users/staff/registry",
-            data={
-                "fields": ["fio"],
-                "page": 1,
-                "pageSize": 200,
-                "order": {
-                    "fieldId": "fio",
-                    "ascending": True
+        try:
+            response = await self.client.post(
+                url="/angular/school/users/staff/",
+                data={
+                    'LoginType': 0,
+                    'at': self.at,
+                    'ver': self.ver,
                 }
-            }
+            )
 
-        )
+            response = await self.client.get(
+                url="/webapi/appflags/persondata",
+            )
 
-        print(response.json())
-        response_file = await self.client.get('/static/dist/pages/common/css/export-tables.min.css')
-        return response.text, response_file.text
+
+            response = await self.client.post(
+                url="/webapi/users/staff/registry",
+                data={
+                    "fields": ["fio"],
+                    "page": 1,
+                    "pageSize": 200,
+                    "order": {
+                        "fieldId": "fio",
+                        "ascending": True
+                    }
+                }
+
+            )
+
+            print(response.json())
+            response_file = await self.client.get('/static/dist/pages/common/css/export-tables.min.css')
+            return response.text, response_file.text
+
+        except Exception as e:
+            print(f"Я помер, потому что: {e}")
+            self.logout()
+
+

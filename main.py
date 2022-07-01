@@ -31,6 +31,8 @@ async def main_httpx():
     html_page, css_file = await session.get_report_class_subject_totals()
     await save_to_img(html_page=html_page, css_file=css_file, type="totals")
 
+    await session.logout()
+
 async def main_aiohttp():
     session = aiohtttp_api.API("https://region.zabedu.ru")
     await session.login(username=USERNAME, password=PASSWORD, school_id=SCHOOL_ID)
