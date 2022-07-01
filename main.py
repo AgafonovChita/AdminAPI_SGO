@@ -10,17 +10,15 @@ PASSWORD = config.PASSWORD
 SCHOOL_ID = config.SCHOOL_ID
 
 
-async def save_to_img(html_page, css_file, type:str):
+async def save_to_img(html_page, css_file, type: str):
     if type == "marks":
         resize_params = (1100, 480)
         name = 'Marks.jpeg'
     if type == "totals":
         resize_params = (800, 3200)
         name = 'Totals.jpeg'
-
     hti = Html2Image(custom_flags=['--no-sandbox'])
     hti.screenshot(html_str=html_page, css_str=css_file, save_as=name, size=resize_params)
-
 
 
 async def main_httpx():
@@ -34,7 +32,6 @@ async def main_httpx():
     await save_to_img(html_page=html_page, css_file=css_file, type="totals")
 
 async def main_aiohttp():
-
     session = aiohtttp_api.API("https://region.zabedu.ru")
     await session.login(username=USERNAME, password=PASSWORD, school_id=SCHOOL_ID)
 
@@ -43,9 +40,6 @@ async def main_aiohttp():
 
     html_page, css_file = await session.get_report_class_subject_totals()
     await save_to_img(html_page=html_page, css_file=css_file, type="totals")
-
-
-
 
     await session.logout()
 
