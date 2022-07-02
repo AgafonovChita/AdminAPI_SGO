@@ -26,6 +26,7 @@ class BaseClient:
 
         self.year_id = None
 
+
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         await self.client.post('/asp/logout.asp',
                                data={"at": self.at, "ver": self.ver})
