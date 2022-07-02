@@ -28,7 +28,7 @@ class BaseClient:
         await self.client.close()
         base_logger.info(f"Session is closed. User: {self.user_name} - userID: {self.user_id}")
 
-    async def __aenter__(self):
+    async def __aenter__(self) -> "BaseClient instance":
         self.client = ClientSession(
             base_url=f"{self.url}",
             headers={'user-agent': 'sgo_api', 'referer': self.url},
