@@ -10,9 +10,8 @@ SCHOOL_ID = config.SCHOOL_ID
 
 
 async def main():
-    client = BaseClient(url=URL)
-    await client.login(username=USERNAME, password=PASSWORD, school_id=SCHOOL_ID)
-    await client.logout()
+    async with BaseClient(url=URL) as client:
+        await client.login(username=USERNAME, password=PASSWORD, school_id=SCHOOL_ID)
 
 
 if __name__ == "__main__":
