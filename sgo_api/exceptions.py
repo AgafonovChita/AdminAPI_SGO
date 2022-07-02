@@ -9,3 +9,8 @@ class SchoolNotFoundError(SgoError):
 
     def __str__(self):
         return f"В версии СГО {self.url} не обнаружено ОУ с id = {self.school_id}"
+
+
+class ReportFailed(SgoError):
+    def __str__(self):
+        return f"Не удалось получить отчёт"

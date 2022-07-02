@@ -6,8 +6,12 @@ from sgo_api import exceptions
 
 class BaseClient:
     def __init__(self, url: str):
-        self.client = None
         self.url = url.rstrip('/')
+
+        self.client = ClientSession(
+            base_url=f"{self.url}",
+            headers={'user-agent': 'sgo_api', 'referer': self.url},
+            timeout=ClientTimeout(connect=60, sock_read=None))
 
         self.at = None
         self.lt = None
@@ -29,10 +33,6 @@ class BaseClient:
         base_logger.info(f"Session is closed. User: {self.user_name} - userID: {self.user_id}")
 
     async def __aenter__(self) -> "BaseClient instance":
-        self.client = ClientSession(
-            base_url=f"{self.url}",
-            headers={'user-agent': 'sgo_api', 'referer': self.url},
-            timeout=ClientTimeout(connect=60, sock_read=None))
         base_logger.info(f"Session connected")
         return self
 
@@ -108,7 +108,8 @@ class BaseClient:
                 "scid": school["id"],
                 "sn": school["name"]}
         except IndexError:
-            raise exceptions.SchoolNotFoundError(self.url, school_id) from None
             await self.force_logout()
+            raise exceptions.SchoolNotFoundError(self.url, school_id) from None
+
 
 
