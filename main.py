@@ -1,52 +1,39 @@
-from ApiAdmin import httpx_api
-from ApiAdmin import aiohtttp_api
-from html2image import Html2Image
+from sgo_api.client.base import BaseClient
+from sgo_api.client.admin import AdminClient
+from sgo_api.client.teacher import TeacherClient
+
+from sgo_api.utils.save_report import save_report_to_img
 import config
 import asyncio
 
 
+URL = config.URL
 USERNAME = config.USERNAME
 PASSWORD = config.PASSWORD
 SCHOOL_ID = config.SCHOOL_ID
 
 
-async def save_to_img(html_page, css_file, type: str):
-    if type == "marks":
-        resize_params = (1100, 480)
-        name = 'Marks.jpeg'
-    if type == "totals":
-        resize_params = (800, 3200)
-        name = 'Totals.jpeg'
-    hti = Html2Image(custom_flags=['--no-sandbox'])
-    hti.screenshot(html_str=html_page, css_str=css_file, save_as=name, size=resize_params)
+async def main():
+    async with AdminClient(url=URL) as client:
+        await client.login(username=USERNAME, password=PASSWORD, school_id=SCHOOL_ID)
 
+        await client.get_stuff_to_excel(name_file_export="MyExport.xls")
 
-async def main_httpx():
-    session = httpx_api.API("https://region.zabedu.ru")
-    await session.login(username=USERNAME, password=PASSWORD, school_id=SCHOOL_ID)
+        await client.get_stuff()
 
-    html_page, css_file = await session.get_report_teacher_average_mark()
-    await save_to_img(html_page=html_page, css_file=css_file, type="marks")
+        vocations = await client.get_vocations()
+        print(vocations)
 
-    html_page, css_file = await session.get_report_class_subject_totals()
-    await save_to_img(html_page=html_page, css_file=css_file, type="totals")
+        subjects = await client.get_subjects()
+        print(subjects)
 
-    await session.logout()
+        classes = await client.get_classes()
+        print(classes)
 
-async def main_aiohttp():
-    session = aiohtttp_api.API("https://region.zabedu.ru")
-    await session.login(username=USERNAME, password=PASSWORD, school_id=SCHOOL_ID)
-
-    html_page, css_file = await session.get_report_teacher_average_mark()
-    await save_to_img(html_page=html_page, css_file=css_file, type="marks")
-
-    html_page, css_file = await session.get_report_class_subject_totals()
-    await save_to_img(html_page=html_page, css_file=css_file, type="totals")
-
-    await session.logout()
+        students = await client.get_students_from_class(class_id=105007)
+        print(students)
 
 
 if __name__ == "__main__":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-    #asyncio.run(main_httpx())
-    asyncio.run(main_aiohttp())
+    asyncio.run(main())

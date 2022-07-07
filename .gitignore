@@ -5,6 +5,11 @@ config.py
 __pycache__/
 *.py[cod]
 *$py.class
+.xls
+MyExport.xls
+text.xls
+Totals.jpg
+
 
 # dotenv
 .env
