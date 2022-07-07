@@ -80,7 +80,12 @@ class TeacherClient(BaseClient):
         return await response.json()
 
     async def get_report_class_attendance(self, month: int, year: int, class_id: int):
-        """Получаем журнал посещаемости по классу"""
+        """
+        :param month: месяц (1, 12)
+        :param year: текущий год
+        :param class_id: можно получить через get_classes()
+        :return: html-text + css-text
+        """
         await self.client.post(
             url="/asp/Reports/ReportClassAttendance.asp",
             data={
@@ -90,7 +95,6 @@ class TeacherClient(BaseClient):
                 'PCLID': class_id,
                 'RPNAME': 'Отчёт о посещаемости класса',
                 'RPTID': 'ClassAttendance'
-
             }
         )
 
@@ -100,7 +104,6 @@ class TeacherClient(BaseClient):
                 'at': self.at,
             }
         )
-
         response_file = await self.client.get('/static/dist/pages/common/css/export-tables.min.css')
         return await response.text(), await response_file.text()
 
@@ -109,10 +112,9 @@ class TeacherClient(BaseClient):
         Получаем отчёт "Средний балл учителя"
         Post-data params:
         "TID" - id учителя
-        "TERMID" - временной промежуток
-            ( -1 это "год", -2 это "итог"(но его может не быть), get_terms)
-        "SJID" - предмет (-1 это "все предметы", но можно явно указать ID предмета(get_subjects)
-        :return: html-text + css-text (чтобы потом обработать и сохранить как картинку)
+        "TERMID" - временной промежуток (можно получить через get_terms())
+        "SJID" - предмет, -1 это "все предметы", остальные можно получить через get_subjects()
+        :return: html-text + css-text
         """
         await self.client.post(
             url="/asp/Reports/ReportTeacherAverageMark.asp",
@@ -164,6 +166,5 @@ class TeacherClient(BaseClient):
                 'at': self.at,
             }
         )
-
         response_file = await self.client.get('/static/dist/pages/common/css/export-tables.min.css')
         return await response.text(), await response_file.text()

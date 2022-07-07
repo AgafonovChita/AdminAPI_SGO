@@ -28,9 +28,7 @@ class BaseClient:
 
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        await self.client.post('/asp/logout.asp',
-                               data={"at": self.at, "ver": self.ver})
-        await self.client.close()
+        await self.force_logout()
         base_logger.info(f"Session is closed. User: {self.user_name} - userID: {self.user_id}")
 
     async def __aenter__(self) -> "BaseClient instance":
@@ -38,9 +36,10 @@ class BaseClient:
         return self
 
     async def force_logout(self):
-        """Метод для принудительно разрыва сессии с СГО
+        """Метод для принудительного разрыва сессии с СГО
         и закрытия клиента"""
-        await self.client.post('/asp/logout.asp')
+        await self.client.post('/asp/logout.asp',
+                               data={"at": self.at, "ver": self.ver})
         await self.client.close()
 
     async def login(self, username: str, password: str, school_id: int):
